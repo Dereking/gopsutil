@@ -5,13 +5,13 @@ package mem
 import (
 	"unsafe"
 
-	"github.com/shirou/gopsutil/internal/common"
+	"github.com/dereking/gopsutil/internal/common"
 	"golang.org/x/sys/windows"
 )
 
 var (
 	procGlobalMemoryStatusEx = common.Modkernel32.NewProc("GlobalMemoryStatusEx")
-	procGetPerformanceInfo = common.ModPsapi.NewProc("GetPerformanceInfo")
+	procGetPerformanceInfo   = common.ModPsapi.NewProc("GetPerformanceInfo")
 )
 
 type memoryStatusEx struct {
@@ -45,20 +45,20 @@ func VirtualMemory() (*VirtualMemoryStat, error) {
 }
 
 type performanceInformation struct {
-	cb				uint32
-	commitTotal		uint64
-	commitLimit		uint64
-	commitPeak		uint64
-	physicalTotal	uint64
+	cb                uint32
+	commitTotal       uint64
+	commitLimit       uint64
+	commitPeak        uint64
+	physicalTotal     uint64
 	physicalAvailable uint64
-	systemCache uint64
-	kernelTotal uint64
-	kernelPaged uint64
-	kernelNonpaged uint64
-	pageSize uint64
-	handleCount uint32
-	processCount uint32
-	threadCount uint32
+	systemCache       uint64
+	kernelTotal       uint64
+	kernelPaged       uint64
+	kernelNonpaged    uint64
+	pageSize          uint64
+	handleCount       uint32
+	processCount      uint32
+	threadCount       uint32
 }
 
 func SwapMemory() (*SwapMemoryStat, error) {
@@ -72,12 +72,11 @@ func SwapMemory() (*SwapMemoryStat, error) {
 	used := perfInfo.commitTotal * perfInfo.pageSize
 	free := tot - used
 	ret := &SwapMemoryStat{
-		Total: tot,
-		Used: used,
-		Free: free,
-		UsedPercent: float64(used/tot),
+		Total:       tot,
+		Used:        used,
+		Free:        free,
+		UsedPercent: float64(used / tot),
 	}
 
 	return ret, nil
 }
-

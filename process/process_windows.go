@@ -11,9 +11,9 @@ import (
 	"unsafe"
 
 	"github.com/StackExchange/wmi"
-	cpu "github.com/shirou/gopsutil/cpu"
-	"github.com/shirou/gopsutil/internal/common"
-	net "github.com/shirou/gopsutil/net"
+	cpu "github.com/dereking/gopsutil/cpu"
+	"github.com/dereking/gopsutil/internal/common"
+	net "github.com/dereking/gopsutil/net"
 	"github.com/shirou/w32"
 	"golang.org/x/sys/windows"
 )
@@ -434,6 +434,29 @@ func getFromSnapProcess(pid int32) (int32, int32, string, error) {
 		}
 	}
 	return 0, 0, "", fmt.Errorf("Couldn't find pid: %d", pid)
+}
+
+//ked add
+func GetProcesses() ([]*w32.PROCESSENTRY32, error) {
+	var ret []*w32.PROCESSENTRY32
+	snap := w32.CreateToolhelp32Snapshot(w32.TH32CS_SNAPPROCESS, uint32(0))
+	if snap == 0 {
+		return ret, windows.GetLastError()
+	}
+	defer w32.CloseHandle(snap)
+
+	pe32 := &w32.PROCESSENTRY32{}
+	pe32.DwSize = uint32(unsafe.Sizeof(pe32))
+	if w32.Process32First(snap, pe32) == false {
+		fmt.Println(pe32)
+		return ret, windows.GetLastError()
+	}
+
+	for w32.Process32Next(snap, pe32) {
+		fmt.Println(pe32)
+		ret = append(ret, pe32)
+	}
+	return ret, nil
 }
 
 // Get processes
